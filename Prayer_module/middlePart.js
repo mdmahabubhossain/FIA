@@ -8,6 +8,7 @@ export async function init(container) {
             <div id="system-date"></div>
         </div>
         <div id="prayer-times"></div>
+        <div id="error-message" style="color: red;"></div>
     `;
 
     // Apply basic styling
@@ -20,18 +21,7 @@ export async function init(container) {
     setInterval(updateSystemClock, 1000); // Update clock every second
 
     // Fetch and display prayer times
-    const prayerTimesContainer = document.getElementById('prayer-times');
-    try {
-        const response = await fetch(
-            'https://raw.githubusercontent.com/mdmahabubhossain/FIA/refs/heads/main/prayer_times_2025.json'
-        );
-        if (!response.ok) throw new Error('Failed to fetch prayer times data');
-
-        const prayerTimes = await response.json();
-        displayPrayerTimes(prayerTimes, prayerTimesContainer);
-    } catch (error) {
-        prayerTimesContainer.innerHTML = `<p>Error loading prayer times: ${error.message}</p>`;
-    }
+    await fetchPrayerTimes();
 }
 
 function updateSystemClock() {
@@ -69,28 +59,27 @@ function getOrdinalSuffix(n) {
     }
 }
 
-export async function loadPrayerTimes(url, container) {
-    if (!container || !url) {
-        console.error('Container or URL is invalid.');
-        return;
-    }
+async function fetchPrayerTimes() {
+    const prayerTimesUrl = 'https://raw.githubusercontent.com/mdmahabubhossain/FIA/refs/heads/main/prayer_times_2025.json';
+    const prayerTimesContainer = document.getElementById('prayer-times');
+    const errorMessageContainer = document.getElementById('error-message');
 
     try {
-        const response = await fetch(url);
+        // Fetch data from the URL
+        const response = await fetch(prayerTimesUrl);
         if (!response.ok) throw new Error('Failed to fetch prayer times data.');
 
         const prayerTimes = await response.json();
-        console.log('Fetched Prayer Times:', prayerTimes); // Debug log
 
-        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-        console.log('Today\'s Date:', today); // Debug log
-
-        const prayerTimesContainer = document.getElementById('prayer-times');
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        console.log('Today\'s Date:', today); // Debugging log
 
         // Find today's prayer times
         const todayPrayerTimes = prayerTimes.find(entry => entry.Date === today);
 
         if (todayPrayerTimes) {
+            // Display today's prayer times
             prayerTimesContainer.innerHTML = `
                 <h3>Prayer Times for Today (${today})</h3>
                 <ul>
@@ -102,12 +91,11 @@ export async function loadPrayerTimes(url, container) {
                 </ul>
             `;
         } else {
-            console.warn(`No prayer times available for today (${today}).`);
             prayerTimesContainer.innerHTML = `<p>No prayer times available for today (${today}).</p>`;
         }
     } catch (error) {
         console.error('Error loading prayer times:', error);
-        container.innerHTML = `<p>Error loading prayer times: ${error.message}</p>`;
+        prayerTimesContainer.innerHTML = '';
+        errorMessageContainer.textContent = 'Error loading prayer times. Please try again later.';
     }
 }
-
