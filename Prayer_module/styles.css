@@ -1,0 +1,23 @@
+#module-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+#top-part, #middle-part, #bottom-part {
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+@media (max-width: 768px) {
+    #module-container {
+        flex-direction: column;
+    }
+
+    #top-part, #middle-part, #bottom-part {
+        padding: 10px;
+    }
+}
