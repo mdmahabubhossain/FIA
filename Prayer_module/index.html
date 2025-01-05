@@ -8,6 +8,11 @@
 </head>
 <body>
     <div id="module-container"></div>
-    <script type="module" src="main.js"></script>
+   <script type="module">
+        import { init } from 'https://mdmahabubhossain.github.io/FIA/Prayer_module.js';
+        
+        const container = document.getElementById('module-container');
+        init(container);
+    </script>
 </body>
 </html>
