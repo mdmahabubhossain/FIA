@@ -1,0 +1,27 @@
+#middle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #eee;
+    border-bottom: 1px solid #ccc;
+}
+
+#system-clock, #system-date {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#prayer-times {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+#prayer-times ul {
+    list-style: none;
+    padding: 0;
+}
+
+#prayer-times li {
+    margin: 5px 0;
+}
