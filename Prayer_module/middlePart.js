@@ -69,22 +69,45 @@ function getOrdinalSuffix(n) {
     }
 }
 
-function displayPrayerTimes(prayerTimes, container) {
-    const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-    const todayTimes = prayerTimes[today];
-    if (todayTimes) {
-        container.innerHTML = `
-            <h3>Prayer Times for Today</h3>
-            <ul>
-                ${Object.entries(todayTimes)
-                    .map(
-                        ([prayer, time]) =>
-                            `<li><strong>${prayer}:</strong> ${time}</li>`
-                    )
-                    .join('')}
-            </ul>
-        `;
-    } else {
-        container.innerHTML = `<p>No prayer times available for today (${today}).</p>`;
+export async function loadPrayerTimes(url, container) {
+    if (!container || !url) {
+        console.error('Container or URL is invalid.');
+        return;
+    }
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch prayer times data.');
+
+        const prayerTimes = await response.json();
+        console.log('Fetched Prayer Times:', prayerTimes); // Debug log
+
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+        console.log('Today\'s Date:', today); // Debug log
+
+        const prayerTimesContainer = document.getElementById('prayer-times');
+
+        // Find today's prayer times
+        const todayPrayerTimes = prayerTimes.find(entry => entry.Date === today);
+
+        if (todayPrayerTimes) {
+            prayerTimesContainer.innerHTML = `
+                <h3>Prayer Times for Today (${today})</h3>
+                <ul>
+                    <li><strong>Fajr:</strong> ${todayPrayerTimes.Fajr}</li>
+                    <li><strong>Dhuhur:</strong> ${todayPrayerTimes.Dhuhur}</li>
+                    <li><strong>Asr:</strong> ${todayPrayerTimes.Asr}</li>
+                    <li><strong>Maghrib:</strong> ${todayPrayerTimes.Maghrib}</li>
+                    <li><strong>Ishaa:</strong> ${todayPrayerTimes.Ishaa}</li>
+                </ul>
+            `;
+        } else {
+            console.warn(`No prayer times available for today (${today}).`);
+            prayerTimesContainer.innerHTML = `<p>No prayer times available for today (${today}).</p>`;
+        }
+    } catch (error) {
+        console.error('Error loading prayer times:', error);
+        container.innerHTML = `<p>Error loading prayer times: ${error.message}</p>`;
     }
 }
+
