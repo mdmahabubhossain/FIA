@@ -1,68 +1,6 @@
-export async function init(container) {
-    if (!container) return;
-
-    // Set up the container structure
-    container.innerHTML = `
-        <div id="middle-header">
-            <div id="system-clock"></div>
-            <div id="system-date"></div>
-        </div>
-        <div id="prayer-times"></div>
-        <div id="error-message" style="color: red;"></div>
-    `;
-
-    // Apply basic styling
-    container.style.padding = '10px';
-    container.style.backgroundColor = '#f9f9f9';
-
-    // Initialize the clock and date
-    updateSystemClock();
-    updateSystemDate();
-    setInterval(updateSystemClock, 1000); // Update clock every second
-
-    // Fetch and display prayer times
-    await fetchPrayerTimes();
-}
-
-function updateSystemClock() {
-    const now = new Date();
-    const clock = document.getElementById('system-clock');
-    if (clock) {
-        clock.textContent = now.toLocaleTimeString('en-US', { hour12: true });
-    }
-}
-
-function updateSystemDate() {
-    const now = new Date();
-    const date = document.getElementById('system-date');
-    if (date) {
-        const day = now.toLocaleDateString('en-US', { weekday: 'long' });
-        const month = now.toLocaleDateString('en-US', { month: 'long' });
-        const dateNumber = now.getDate();
-        const year = now.getFullYear();
-        const ordinal = getOrdinalSuffix(dateNumber);
-        date.textContent = `${day}, ${dateNumber}${ordinal} ${month}, ${year}`;
-    }
-}
-
-function getOrdinalSuffix(n) {
-    if (n > 3 && n < 21) return 'th'; // Catch 11th-13th
-    switch (n % 10) {
-        case 1:
-            return 'st';
-        case 2:
-            return 'nd';
-        case 3:
-            return 'rd';
-        default:
-            return 'th';
-    }
-}
-
-async function fetchPrayerTimes() {
-    const prayerTimesUrl = 'https://raw.githubusercontent.com/mdmahabubhossain/FIA/refs/heads/main/prayer_times_2025.json';
-    const prayerTimesContainer = document.getElementById('prayer-times');
-    const errorMessageContainer = document.getElementById('error-message');
+export async function fetchPrayerTimes(prayerTimesUrl, prayerTimesContainerId, errorMessageContainerId) {
+    const prayerTimesContainer = document.getElementById(prayerTimesContainerId);
+    const errorMessageContainer = document.getElementById(errorMessageContainerId);
 
     try {
         // Fetch data from the URL
@@ -79,7 +17,7 @@ async function fetchPrayerTimes() {
         const todayPrayerTimes = prayerTimes.find(entry => entry.Date === today);
 
         if (todayPrayerTimes) {
-            // Display today's prayer times
+            // Clear previous content
             prayerTimesContainer.innerHTML = `
                 <h3>Prayer Times for Today (${today})</h3>
                 <ul>
