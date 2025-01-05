@@ -32,8 +32,8 @@ class ModularComponent {
 export function init(container) {
     if (!container) return;
 
-    container.innerHTML = '<h1>Prayer Module Initialized</h1>';
-    // Add additional functionality here
+    // Example content for the bottom part
+    container.innerHTML = '<h2>Bottom Section Loaded Successfully</h2>';
 }
 // Initialize module
 const moduleInstance = new ModularComponent('module-container');
